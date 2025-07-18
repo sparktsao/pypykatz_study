@@ -4,6 +4,78 @@
 
 This study provides a comprehensive analysis of the top 10 password acquisition strategies using pypykatz, including success rates, complexity analysis, and optimal use cases for each approach.
 
+## Prerequisite Knowledge
+
+### Understanding Strategy Types
+
+#### Live Analysis
+- **Definition**: Direct access to running Windows system memory and processes
+- **Requirements**: Administrative privileges on the target Windows system
+- **Advantages**: Real-time data, highest success rate, immediate results
+- **Disadvantages**: Requires direct system access, may trigger security software
+- **Examples**: Accessing live LSASS process, reading live registry
+
+#### Offline Analysis
+- **Definition**: Analysis of previously captured memory dumps, files, or system artifacts
+- **Requirements**: Access to dump files or system artifacts (no live system needed)
+- **Advantages**: Stealth (no live system interaction), cross-platform analysis, forensic preservation
+- **Disadvantages**: Data may be stale, requires prior dump creation, potential data loss
+- **Examples**: LSASS minidumps, memory dumps, registry hive files, hibernation files
+
+#### Remote Analysis
+- **Definition**: Network-based access to remote Windows systems
+- **Requirements**: Network connectivity, valid credentials, appropriate permissions
+- **Advantages**: Lateral movement capability, no physical access needed
+- **Disadvantages**: Network dependencies, authentication requirements, potential detection
+- **Examples**: Remote LSASS access via SMB, DCSync attacks over network
+
+### Memory Size Classifications
+
+#### Target Data Size (What pypykatz analyzes)
+This refers to the size of the data that pypykatz must process and scan:
+
+- **Small (< 100MB)**: Registry hives, small process dumps
+  - **Scan Complexity**: O(n) - Linear relationship
+  - **Processing Time**: 1-10 seconds
+  - **RAM Required**: 512MB minimum
+
+- **Medium (100MB-1GB)**: LSASS process dumps, crash dumps
+  - **Scan Complexity**: O(n) - Linear relationship  
+  - **Processing Time**: 10 seconds - 5 minutes
+  - **RAM Required**: 1-2GB minimum
+
+- **Large (1-8GB)**: Full memory dumps, hibernation files
+  - **Scan Complexity**: O(n) - Linear relationship
+  - **Processing Time**: 5-60 minutes
+  - **RAM Required**: 2-4GB minimum
+
+- **Very Large (> 8GB)**: Complete system memory dumps
+  - **Scan Complexity**: O(n) - Linear relationship
+  - **Processing Time**: 30+ minutes
+  - **RAM Required**: 4-8GB minimum
+
+#### Computational Memory Requirements
+This refers to the RAM needed by pypykatz to perform the analysis:
+
+- **Minimum System RAM**: 2GB (for basic operations)
+- **Recommended RAM**: 8GB (for large dump analysis)
+- **Optimal RAM**: 16GB+ (for very large dumps and multiple concurrent operations)
+
+**Important**: pypykatz uses streaming analysis, so it doesn't load entire dumps into memory. The computational complexity is **linear O(n)** with respect to target data size, meaning doubling the dump size approximately doubles the processing time.
+
+### Complexity Analysis Framework
+
+#### Linear Complexity O(n)
+- **Memory scanning**: Time increases proportionally with data size
+- **Pattern matching**: Each byte must be examined once
+- **Structure parsing**: Sequential processing of data structures
+
+#### Factors Affecting Real Performance
+- **Storage Speed**: SSD vs HDD can create 2-5x difference
+- **CPU Speed**: Affects pattern matching and decryption operations
+- **Available RAM**: Insufficient RAM causes disk swapping (10-100x slowdown)
+- **File Fragmentation**: Can add 10-50% overhead
+
 ## Strategy Comparison Table
 
 | # | Strategy Name | Command | Password Location | Type | Success Rate | Speed | Complexity | Memory Size | Prerequisites |
